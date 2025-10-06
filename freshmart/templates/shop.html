@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shop All Products - FreshMart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <nav class="navbar container">
+        <a href="index.html" class="logo">FreshMart</a>
+        <div class="search-bar">
+          <input type="text" placeholder="Search for products..." />
+          <button type="submit"><i class="fas fa-search"></i></button>
+        </div>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="shop.html" class="active">Shop</a></li>
+       
+        </ul>
+        <div class="nav-icons">
+          <div class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-count">0</span>
+          </div>
+          <button class="theme-toggle-btn" aria-label="Toggle Theme">
+            <i class="fas fa-sun"></i>
+            <i class="fas fa-moon"></i>
+          </button>
+          <button class="menu-toggle" aria-label="Toggle Menu">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="shop-page container">
+        <h1>Our Products</h1>
+
+        <div class="shop-controls">
+          <div class="filter-control">
+            <label for="category-filter">Filter by Category:</label>
+            <select id="category-filter" name="category">
+              <option value="all">All Categories</option>
+              <option value="fruits">Fruits</option>
+              <option value="vegetables">Vegetables</option>
+              <option value="dairy">Dairy</option>
+              <option value="snacks">Snacks</option>
+              <option value="bakery">Bakery</option>
+            </select>
+          </div>
+          <div class="sort-control">
+            <label for="sort-options">Sort by:</label>
+            <select id="sort-options" name="sort">
+              <option value="default">Default</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="name-asc">Name: A-Z</option>
+              <option value="name-desc">Name: Z-A</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="product-grid-shop" class="product-grid"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>
+          &copy; <span id="current-year"></span> FreshMart. All rights reserved.
+        </p>
+      </div>
+    </footer>
+
+    <button class="scroll-top-btn" aria-label="Scroll to top">
+      <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <div id="cart-modal" class="modal">
+      <div class="modal-content">
+        <button class="close-modal-btn" aria-label="Close cart popup">
+          &times;
+        </button>
+        <h2>Shopping Cart</h2>
+        <div id="cart-items-container">
+          <p class="cart-empty-msg" style="display: none">
+            Your cart is empty.
+          </p>
+        </div>
+        <div class="cart-summary">
+          <strong>Subtotal:</strong> <span id="cart-subtotal">$0.00</span>
+        </div>
+        <div class="cart-actions">
+          <button class="btn btn-primary checkout-btn">
+            Proceed to Checkout
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="product-detail-modal" class="modal">
+        <div class="modal-content product-detail-content">
+            <button class="close-modal-btn" aria-label="Close product details">&times;</button>
+            <div id="product-detail-container">
+                </div>
+        </div>
+    </div>
+
+    <script src="products.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

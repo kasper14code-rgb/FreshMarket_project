@@ -1,0 +1,186 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FreshMart - Your Daily Grocery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+  <body>
+    <header class="header">
+      <nav class="navbar container">
+        <a href="#" class="logo">FreshMart</a>
+        <div class="search-bar">
+          <input type="text" placeholder="Search for products..." />
+          <button type="submit"><i class="fas fa-search"></i></button>
+        </div>
+        <ul class="nav-links">
+          <li><a href="#home" class="active">Home</a></li>
+          <li><a href="shop.html">Shop</a></li>
+        </ul>
+        <div class="nav-icons">
+          <div class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-count">0</span>
+          </div>
+          <button class="theme-toggle-btn" aria-label="Toggle Theme">
+            <i class="fas fa-sun"></i> <i class="fas fa-moon"></i>
+          </button>
+          <button class="menu-toggle" aria-label="Toggle Menu">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section id="home" class="hero-section">
+        <div class="container hero-content">
+          <h1>Fresh Groceries Delivered Daily</h1>
+          <p>
+            Get the best quality produce, dairy, and pantry staples delivered to
+            your doorstep.
+          </p>
+          <a href="shop.html" class="btn btn-primary">Shop Now</a>
+        </div>
+      </section>
+
+      <section class="category-section container">
+        <h2>Shop by Category</h2>
+        <div class="category-grid">
+          <div class="category-card">
+            <a href="shop.html?category=fruits" class="category-link">
+              <img
+                src="https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                alt="Fruits"
+              />
+              <h3>Fruits</h3>
+            </a>
+          </div>
+
+          <div class="category-card">
+            <a href="shop.html?category=vegetables" class="category-link">
+              <img
+                src="https://images.pexels.com/photos/1435904/pexels-photo-1435904.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                alt="Vegetables"
+              />
+              <h3>Vegetables</h3>
+            </a>
+          </div>
+
+          <div class="category-card">
+            <a href="shop.html?category=dairy" class="category-link">
+              <img
+                src="https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                alt="Dairy"
+              />
+              <h3>Dairy</h3>
+            </a>
+          </div>
+
+          <div class="category-card">
+            <a href="shop.html?category=snacks" class="category-link">
+              <img
+                src="https://images.pexels.com/photos/1582482/pexels-photo-1582482.jpeg"
+                alt="Snacks"
+              />
+              <h3>Snacks</h3>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="promotional-section">
+        <div class="container promo-content">
+          <h2>Special Offers!</h2>
+          <p>Get up to 20% off on selected organic vegetables this week.</p>
+          <a href="#shop" class="btn btn-secondary">View Deals</a>
+        </div>
+      </section>
+
+      <section id="featured" class="featured-products container">
+        <h2>Bestsellers</h2>
+        <div id="bestseller-grid" class="product-grid"></div>
+      </section>
+
+      <section
+        id="product-detail-placeholder"
+        class="container page-section"
+        style="display: none"
+      >
+        <h2>Product Detail Page</h2>
+        <p>
+          Details about a specific product would go here (image zoom,
+          description, nutrition, etc.)
+        </p>
+      </section>
+
+      <section
+        id="cart-placeholder"
+        class="container page-section"
+        style="display: none"
+      >
+        <h2>Shopping Cart</h2>
+        <p>
+          List of selected items, quantity adjustments, subtotal, and checkout
+          button would be here.
+        </p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>
+          &copy; <span id="current-year"></span> FreshMart. All rights reserved.
+        </p>
+      </div>
+    </footer>
+
+    <button class="scroll-top-btn" aria-label="Scroll to top">
+      <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <div id="cart-modal" class="modal">
+      <div class="modal-content">
+        <button class="close-modal-btn" aria-label="Close cart popup">
+          &times;
+        </button>
+        <h2>Shopping Cart</h2>
+        <div id="cart-items-container">
+          <p class="cart-empty-msg" style="display: none">
+            Your cart is empty.
+          </p>
+        </div>
+        <div class="cart-summary">
+          <strong>Subtotal:</strong> <span id="cart-subtotal">$0.00</span>
+        </div>
+        <div class="cart-actions">
+          <button class="btn btn-primary checkout-btn">
+            Proceed to Checkout
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="product-detail-modal" class="modal">
+        <div class="modal-content product-detail-content">
+            <button class="close-modal-btn" aria-label="Close product details">&times;</button>
+            <div id="product-detail-container">
+                </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/products.js' %}"></script>
+    <script src="{%static 'js/script.js'%}"></script>
+  </body>
+</html>

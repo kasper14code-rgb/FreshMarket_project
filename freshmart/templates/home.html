@@ -20,7 +20,7 @@
           <div class="category-card">
             <a href="{% url 'freshmart:shop' %}?category={{ category.slug }}">
               {% if category.image %}
-              <img src="{{% category.image.url %}}" alt="{{ category.name }}">
+              <img src="{{ category.image.url }}" alt="{{ category.name }}">
                {% endif %}
               <h3>{{ category.name }}</h3>
             </a>
@@ -33,8 +33,10 @@
       <section class="featured-products container">
         <h2>Featured Products</h2>
         <div class="product-grid">
-          {% if product.image %}
-          <img src="{{ product.image.url }}" alt="{{ product.name }}">
+          {%for product in featured_products%}
+          <div class="product-card">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
           {% endif %}
           {% if products.is_on_sale %}
           <span class="sale-badge">{{ product.discount_percentage }}% OFF</span>

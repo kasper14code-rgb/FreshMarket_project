@@ -1,0 +1,24 @@
+{% extends 'store/base.html' %}
+{% block content %}
+<div>
+  <img src="{{ product.image.url }}" alt="{{ product.name }}">
+  <h2>{{ product.name }}</h2>
+  <p>{{ product.description }}</p>
+  <p>Price: ${{ product.price }}</p>
+
+  <h3>Leave a Review</h3>
+  <form method="POST" action="{% url 'add_review' product.id %}">
+    {% csrf_token %}
+    <input type="text" name="name" placeholder="Your Name" required>
+    <input type="number" name="rating" min="1" max="5" required>
+    <textarea name="comment" placeholder="Write a comment..." required></textarea>
+    <button type="submit">Submit</button>
+  </form>
+
+  <h3>Reviews</h3>
+  {% for review in reviews %}
+    <p><strong>{{ review.name }}</strong> rated {{ review.rating }}/5</p>
+    <p>{{ review.comment }}</p>
+  {% endfor %}
+</div>
+{% endblock %}

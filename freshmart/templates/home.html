@@ -1,75 +1,79 @@
+{% extends 'base.html' %}
 {%load static%}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FreshMart - Your Daily Grocery</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Poppins:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-  </head>
-  <body>
-    <header class="header">
-      <nav class="navbar container">
-        <a href="#" class="logo">FreshMart</a>
-        <div class="search-bar">
-          <input type="text" placeholder="Search for products..." />
-          <button type="submit"><i class="fas fa-search"></i></button>
-        </div>
-        <ul class="nav-links">
-          <li><a href="#home" class="active">Home</a></li>
-          <li><a href="shop.html">Shop</a></li>
-        </ul>
-        <div class="nav-icons">
-          <div class="cart-icon">
-            <i class="fas fa-shopping-cart"></i>
-            <span class="cart-count">0</span>
-          </div>
-          <button class="theme-toggle-btn" aria-label="Toggle Theme">
-            <i class="fas fa-sun"></i> <i class="fas fa-moon"></i>
-          </button>
-          <button class="menu-toggle" aria-label="Toggle Menu">
-            <i class="fas fa-bars"></i>
-          </button>
-        </div>
-      </nav>
-    </header>
 
-    <main>
-      <section id="home" class="hero-section">
-        <div class="container hero-content">
-          <h1>Fresh Groceries Delivered Daily</h1>
-          <p>
-            Get the best quality produce, dairy, and pantry staples delivered to
-            your doorstep.
-          </p>
-          <a href="shop.html" class="btn btn-primary">Shop Now</a>
-        </div>
-      </section>
+{% comment %} {% block title %}Welcome {% endblock%} {% endcomment %}
+
+{% block content %}
+
+    <section class="hero-section">
+      <div class="container hero-content">
+        <h1>Fresh Groceries Delivered Daily</h1>
+        <p>Get the best quality, dairy and pantry staples delivered to your doorstep.</p>
+        <a href="{% url 'freshmart:shop' %}" class="btn btn-primary">Shop Now</a>
+      </div>
+    </section>
 
       <section class="category-section container">
         <h2>Shop by Category</h2>
         <div class="category-grid">
+          {% for category in categories %}
           <div class="category-card">
-            <a href="shop.html?category=fruits" class="category-link">
-              <img
-                src="https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                alt="Fruits"
-              />
-              <h3>Fruits</h3>
+            <a href="{% url 'freshmart:shop' %}?category={{ category.slug }}">
+              {% if category.image %}
+              <img src="{{% category.image.url %}}" alt="{{ category.name }}">
+               {% endif %}
+              <h3>{{ category.name }}</h3>
             </a>
           </div>
+          {% endfor %}
+          
+        </div>
+      </section>
 
-          <div class="category-card">
+      <section class="featured-products container">
+        <h2>Featured Products</h2>
+        <div class="product-grid">
+          {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}">
+          {% endif %}
+          {% if products.is_on_sale %}
+          <span class="sale-badge">{{ product.discount_percentage }}% OFF</span>
+          {% endif %}
+          <h3>{{ product.name }}</h3>
+          <div class="product-price">
+            {% if products.is_on_sale %}
+            <span class="original-price">${{ product.price }}</span>
+            <span class="sale-price">${{ product.effective_price }}</span>
+            {% else %}
+            <span>${{ product.price }}</span>
+            {% endif %}
+          </div>
+          <a href="{% url 'freshmart:product_detail' product.slug %}" class="btn btn-primary">View Details</a>
+        </div>
+        {% endfor %}
+       </div>
+      </section>
+
+      <section class="reviews-section container">
+        <h2>Customer Reviews</h2>
+        <div class="reviews-grid">
+          {% for review in recent_reviews %}
+          <div class="review-header">
+            <strong>{{ review.user.get_full_name|default:review.user.username }}</strong>
+            <div class="rating">
+              {% for i in "1234" %}
+              <i class="fas fa-star {% if forloop.counter > review.rating %}inactive{% endif %}"></i>
+              {% endfor %}
+            </div>
+          </div>
+          <p>{{ review.comment|truncatewords:30 }}</p>
+          <small><a href="{% url 'freshmart:product_detail' review.product.slug %}">{{ review.product.name }}</a></small>
+        </div>
+        {% endfor %}
+      </div>
+      </section>
+      {% endblock %}
+          {% comment %} <div class="category-card">
             <a href="shop.html?category=vegetables" class="category-link">
               <img
                 src="https://images.pexels.com/photos/1435904/pexels-photo-1435904.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
@@ -99,9 +103,9 @@
             </a>
           </div>
         </div>
-      </section>
+      </section> {% endcomment %}
 
-      <section class="promotional-section">
+      {% comment %} <section class="promotional-section">
         <div class="container promo-content">
           <h2>Special Offers!</h2>
           <p>Get up to 20% off on selected organic vegetables this week.</p>
@@ -137,17 +141,11 @@
           button would be here.
         </p>
       </section>
-    </main>
+    </main> {% endcomment %}
 
-    <footer class="footer">
-      <div class="container">
-        <p>
-          &copy; <span id="current-year"></span> FreshMart. All rights reserved.
-        </p>
-      </div>
-    </footer>
 
-    <button class="scroll-top-btn" aria-label="Scroll to top">
+
+    {% comment %} <button class="scroll-top-btn" aria-label="Scroll to top">
       <i class="fas fa-arrow-up"></i>
     </button>
 
@@ -178,9 +176,6 @@
             <div id="product-detail-container">
                 </div>
         </div>
-    </div>
-
-    <script src="{% static 'js/products.js' %}"></script>
-    <script src="{%static 'js/script.js'%}"></script>
+    </div> {% endcomment %}
   </body>
 </html>

@@ -1,50 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shop All Products - FreshMart</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Poppins:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header class="header">
-      <nav class="navbar container">
-        <a href="index.html" class="logo">FreshMart</a>
-        <div class="search-bar">
-          <input type="text" placeholder="Search for products..." />
-          <button type="submit"><i class="fas fa-search"></i></button>
-        </div>
-        <ul class="nav-links">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="shop.html" class="active">Shop</a></li>
-       
-        </ul>
-        <div class="nav-icons">
-          <div class="cart-icon">
-            <i class="fas fa-shopping-cart"></i>
-            <span class="cart-count">0</span>
-          </div>
-          <button class="theme-toggle-btn" aria-label="Toggle Theme">
-            <i class="fas fa-sun"></i>
-            <i class="fas fa-moon"></i>
-          </button>
-          <button class="menu-toggle" aria-label="Toggle Menu">
-            <i class="fas fa-bars"></i>
-          </button>
-        </div>
-      </nav>
-    </header>
+{% extends 'base.html' %}
+{%load static%}
 
+{% comment %} {% block title %}Welcome {% endblock%} {% endcomment %}
+
+{% block content %}
+  <body>
     <main>
       <section class="shop-page container">
         <h1>Our Products</h1>
@@ -76,14 +36,6 @@
         <div id="product-grid-shop" class="product-grid"></div>
       </section>
     </main>
-
-    <footer class="footer">
-      <div class="container">
-        <p>
-          &copy; <span id="current-year"></span> FreshMart. All rights reserved.
-        </p>
-      </div>
-    </footer>
 
     <button class="scroll-top-btn" aria-label="Scroll to top">
       <i class="fas fa-arrow-up"></i>

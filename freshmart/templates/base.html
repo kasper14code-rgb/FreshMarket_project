@@ -28,9 +28,9 @@
             <button type="submit"><i class="fas fa-search"></i></button>
           </form>
           <ul class="nav-links">
-            <li><a href="{% url 'freshmart:home' %}" {% if request.resolver_match.url_name == 'home' %} class="active">Home</a></li>
-            <li><a href="{% url 'freshmart:shop' %}" {% if request.resolver_match.url_name == 'shop' %} class="active">Shop</a></li>
-            <li><a href="{% url 'freshmart:contact' %}" {% if request.resolver_match.url_name == 'contact' %} class="active">Contact</a></li>
+            <li><a href="{% url 'freshmart:home' %}" {% if request.resolver_match.url_name == 'home' %} class="active"{%endif%}>Home</a></li>
+            <li><a href="{% url 'freshmart:shop' %}" {% if request.resolver_match.url_name == 'shop' %} class="active"{%endif%}>Shop</a></li>
+            <li><a href="{% url 'freshmart:contact' %}" {% if request.resolver_match.url_name == 'contact' %} class="active"{%endif%}>Contact</a></li>
             {% if user.is_authenticated %}
             <li><a href="{% url 'freshmart:my_orders' %}">My Orders</a></li>
             <li><a href="{% url 'logout' %}">Logout</a></li>

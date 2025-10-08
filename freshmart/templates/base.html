@@ -1,0 +1,84 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title%} FreshMart - Your Daily Grocery {% endblock%}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    {% block extra_css%}{% endblock%}
+  </head>
+<body>
+    <header class="header">
+        <nav class="navbar container">
+          <a href="{% url 'freshmart:home' %}" class="logo">FreshMart</a>
+          <form method="get" action="{% url 'freshmart:shop' %}" class="search-bar">
+            <input type="text" name="search" placeholder="Search for products..." value="{{ search_query }}"/>
+            <button type="submit"><i class="fas fa-search"></i></button>
+          </form>
+          <ul class="nav-links">
+            <li><a href="{% url 'freshmart:home' %}" {% if request.resolver_match.url_name == 'home' %} class="active">Home</a></li>
+            <li><a href="{% url 'freshmart:shop' %}" {% if request.resolver_match.url_name == 'shop' %} class="active">Shop</a></li>
+            <li><a href="{% url 'freshmart:contact' %}" {% if request.resolver_match.url_name == 'contact' %} class="active">Contact</a></li>
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'freshmart:my_orders' %}">My Orders</a></li>
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+            {% else %}
+            <li><a href="{% url 'login' %}">Login</a></li>
+            {% endif %}
+          </ul>
+          <div class="nav-icons">
+                <a href="{% url 'freshmart:cart' %}" class="cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">{{ cart.total_items|default:0 }}</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+    
+            {% comment %} <button class="theme-toggle-btn" aria-label="Toggle Theme">
+              <i class="fas fa-sun"></i> <i class="fas fa-moon"></i>
+            </button>
+            <button class="menu-toggle" aria-label="Toggle Menu">
+              <i class="fas fa-bars"></i>
+            </button>
+          </div>
+           {% endcomment %}
+
+           {% if messages %}
+           <div class="messages-container">
+            {% for messages in messages %}
+            <div class="alert alert-{{ messages.tags }}">
+                {{ message }}
+                <button class="close-btn">&times;</button>
+            </div>
+            {% endfor %}
+           </div>
+           {% endif %}
+
+           <main>
+                {% block content %}{% endblock%}
+           </main>
+
+           <footer class="footer">
+             <div class="container">
+                <p>&copy; <span id="current-year"></span> FreshMart. All rights reserved.</p>
+             </div>
+           </footer>
+
+            <script src="{% static 'js/products.js' %}"></script>
+            <script src="{%static 'js/script.js'%}"></script>
+            {% block extra_js %}{% endblock%}
+</body>
+</html>

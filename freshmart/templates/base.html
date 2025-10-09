@@ -33,9 +33,9 @@
             <li><a href="{% url 'freshmart:contact' %}" {% if request.resolver_match.url_name == 'contact' %} class="active"{%endif%}>Contact</a></li>
             {% if user.is_authenticated %}
             <li><a href="{% url 'freshmart:my_orders' %}">My Orders</a></li>
-            <li><a href="{% url 'logout' %}">Logout</a></li>
+            <li><a href="{% url 'freshmart:logout' %}">Logout</a></li>
             {% else %}
-            <li><a href="{% url 'login' %}">Login</a></li>
+            <li><a href="{% url 'freshmart:login' %}">Login</a></li>
             {% endif %}
           </ul>
           <div class="nav-icons">
@@ -46,15 +46,14 @@
             </div>
         </nav>
     </header>
-    
-            {% comment %} <button class="theme-toggle-btn" aria-label="Toggle Theme">
+    {% comment %} <button class="theme-toggle-btn" aria-label="Toggle Theme">
               <i class="fas fa-sun"></i> <i class="fas fa-moon"></i>
             </button>
             <button class="menu-toggle" aria-label="Toggle Menu">
               <i class="fas fa-bars"></i>
             </button>
-          </div>
-           {% endcomment %}
+          </div> {% endcomment %}
+           
 
            {% if messages %}
            <div class="messages-container">

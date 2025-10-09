@@ -1,164 +1,143 @@
 from django.contrib import admin
-
-# Register your models here.
 from django.utils.html import format_html
-from .models import Category, Product, Review, ContactMessage, Order, OrderItem
+from django.db.models import Count, Avg
+from .models import Category, Product, Cart, CartItem, Order, OrderItem, ProductReview, Wishlist, ContactMessage
 
-
-# Category Admin
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'product_count', 'description_preview')
+    list_display = ('name', 'slug', 'product_count', 'is_active', 'created_at')
+    list_filter = ('is_active', 'created_at')
     search_fields = ('name', 'description')
-    ordering = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
+    readonly_fields = ('created_at',)
     
     def product_count(self, obj):
         return obj.products.count()
-    product_count.short_description = 'Number of Products'
-    
-    def description_preview(self, obj):
-        if obj.description:
-            return obj.description[:50] + '...' if len(obj.description) > 50 else obj.description
-        return '-'
-    description_preview.short_description = 'Description'
+    product_count.short_description = 'Products'
 
-
-# Product Admin
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price', 'featured', 'image_preview', 'review_count')
-    list_filter = ('category', 'featured')
+    list_display = ('name', 'category', 'price', 'discounted_price', 'stock_quantity', 
+                   'is_featured', 'is_bestseller', 'is_active', 'image_preview')
+    list_filter = ('category', 'is_featured', 'is_bestseller', 'is_active', 'created_at')
     search_fields = ('name', 'description')
-    list_editable = ('featured', 'price')
-    ordering = ('name',)
-    readonly_fields = ('image_preview_large',)
+    prepopulated_fields = {'slug': ('name',)}
+    readonly_fields = ('created_at', 'updated_at', 'image_preview', 'avg_rating', 'review_count')
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('name', 'category', 'description')
+            'fields': ('name', 'slug', 'category', 'description')
         }),
-        ('Pricing & Display', {
-            'fields': ('price', 'featured')
+        ('Pricing & Stock', {
+            'fields': ('price', 'discounted_price', 'stock_quantity', 'unit')
         }),
         ('Media', {
-            'fields': ('image_url', 'image_preview_large')
+            'fields': ('image', 'image_preview')
         }),
+        ('Settings', {
+            'fields': ('is_featured', 'is_bestseller', 'is_active')
+        }),
+        ('Additional Info', {
+            'fields': ('nutrition_info',),
+            'classes': ('collapse',)
+        }),
+        ('Statistics', {
+            'fields': ('avg_rating', 'review_count', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        })
     )
     
     def image_preview(self, obj):
-        if obj.image_url:
-            return format_html('<img src="{}" width="50" height="50" style="object-fit: cover; border-radius: 4px;" />', obj.image_url)
-        return '-'
-    image_preview.short_description = 'Image'
+        if obj.image:
+            return format_html('<img src="{}" width="50" height="50" />', obj.image.url)
+        return "No Image"
+    image_preview.short_description = 'Image Preview'
     
-    def image_preview_large(self, obj):
-        if obj.image_url:
-            return format_html('<img src="{}" width="200" style="border-radius: 8px;" />', obj.image_url)
-        return 'No image available'
-    image_preview_large.short_description = 'Product Image'
+    def avg_rating(self, obj):
+        avg = obj.reviews.aggregate(Avg('rating'))['rating__avg']
+        return round(avg, 1) if avg else 'No ratings'
+    avg_rating.short_description = 'Average Rating'
     
     def review_count(self, obj):
-        count = obj.reviews.count()
-        return f"{count} review{'s' if count != 1 else ''}"
+        return obj.reviews.count()
     review_count.short_description = 'Reviews'
 
-
-# Review Admin
-@admin.register(Review)
-class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('product', 'name', 'rating_stars', 'comment_preview', 'created_at')
-    list_filter = ('rating', 'created_at')
-    search_fields = ('name', 'comment', 'product__name')
-    readonly_fields = ('created_at', 'user')
-    ordering = ('-created_at',)
+class CartItemInline(admin.TabularInline):
+    model = CartItem
+    extra = 0
+    readonly_fields = ('total_price',)
     
-    def rating_stars(self, obj):
-        stars = '⭐' * obj.rating
-        return format_html('<span style="font-size: 16px;">{}</span>', stars)
-    rating_stars.short_description = 'Rating'
+    def total_price(self, obj):
+        return obj.total_price if obj.pk else 0
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'session_key', 'total_items', 'total_price', 'created_at')
+    list_filter = ('created_at', 'updated_at')
+    search_fields = ('user__username', 'session_key')
+    readonly_fields = ('created_at', 'updated_at', 'total_items', 'total_price')
+    inlines = [CartItemInline]
     
-    def comment_preview(self, obj):
-        return obj.comment[:60] + '...' if len(obj.comment) > 60 else obj.comment
-    comment_preview.short_description = 'Comment'
-
-
-# Contact Message Admin
-@admin.register(ContactMessage)
-class ContactMessageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'message_preview', 'created_at')
-    list_filter = ('created_at',)
-    search_fields = ('name', 'email', 'message')
-    readonly_fields = ('name', 'email', 'message', 'created_at')
-    ordering = ('-created_at',)
+    def total_items(self, obj):
+        return obj.total_items
+    total_items.short_description = 'Total Items'
     
-    def message_preview(self, obj):
-        return obj.message[:80] + '...' if len(obj.message) > 80 else obj.message
-    message_preview.short_description = 'Message'
-    
-    def has_add_permission(self, request):
-        # Users submit contact forms on the website, not in admin
-        return False
+    def total_price(self, obj):
+        return f"${obj.total_price}"
+    total_price.short_description = 'Total Price'
 
-
-# Order Item Inline (for Order Admin)
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
-    readonly_fields = ('product', 'quantity', 'subtotal')
-    can_delete = False
+    readonly_fields = ('total_price',)
     
-    def subtotal(self, obj):
-        return f"${obj.product.price * obj.quantity:.2f}"
-    subtotal.short_description = 'Subtotal'
+    def total_price(self, obj):
+        return obj.total_price if obj.pk else 0
 
-
-# Order Admin
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('order_number', 'user_display', 'total_items', 'order_total', 'completed', 'created_at')
-    list_filter = ('completed', 'created_at')
-    search_fields = ('id', 'user__username', 'user__email')
-    readonly_fields = ('created_at', 'order_total_display')
-    list_editable = ('completed',)
-    ordering = ('-created_at',)
+    list_display = ('order_number', 'user', 'status', 'total_amount', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('order_number', 'user__username', 'phone_number')
+    readonly_fields = ('order_number', 'created_at', 'updated_at')
     inlines = [OrderItemInline]
     
     fieldsets = (
         ('Order Information', {
-            'fields': ('user', 'created_at', 'completed')
+            'fields': ('order_number', 'user', 'status', 'total_amount')
         }),
-        ('Order Summary', {
-            'fields': ('order_total_display',)
+        ('Delivery Details', {
+            'fields': ('delivery_address', 'phone_number', 'notes')
         }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        })
     )
     
-    def order_number(self, obj):
-        return f"#{obj.id}"
-    order_number.short_description = 'Order'
-    
-    def user_display(self, obj):
-        if obj.user:
-            return obj.user.username
-        return 'Guest'
-    user_display.short_description = 'Customer'
-    
-    def total_items(self, obj):
-        total = sum(item.quantity for item in obj.items.all())
-        return f"{total} item{'s' if total != 1 else ''}"
-    total_items.short_description = 'Items'
-    
-    def order_total(self, obj):
-        total = sum(item.product.price * item.quantity for item in obj.items.all())
-        return f"${total:.2f}"
-    order_total.short_description = 'Total'
-    
-    def order_total_display(self, obj):
-        total = sum(item.product.price * item.quantity for item in obj.items.all())
-        return format_html('<strong style="font-size: 18px; color: #28a745;">${:.2f}</strong>', total)
-    order_total_display.short_description = 'Order Total'
+    def save_model(self, request, obj, form, change):
+        if not obj.order_number:
+            import uuid
+            obj.order_number = f"ORD-{uuid.uuid4().hex[:8].upper()}"
+        super().save_model(request, obj, form, change)
 
+@admin.register(ProductReview)
+class ProductReviewAdmin(admin.ModelAdmin):
+    list_display = ('product', 'user', 'rating', 'created_at')
+    list_filter = ('rating', 'created_at')
+    search_fields = ('product__name', 'user__username', 'comment')
+    readonly_fields = ('created_at',)
 
-# # Optional: Customize Admin Site Header
-# admin.site.site_header = "FreshMart Administration"
-# admin.site.site_title = "FreshMart Admin"
-# admin.site.index_title = "Welcome to FreshMart Admin Portal"
+@admin.register(Wishlist)
+class WishlistAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('user__username', 'product__name')
+    readonly_fields = ('created_at',)
+
+    @admin.register(ContactMessage)
+    class ContactMessageAdmin(admin.ModelAdmin):
+        list_display = ('name', 'email', 'subject', 'is_read', 'created_at')
+        list_filter = ('is_read', 'created_at')
+        search_fields = ('name', 'email', 'subject', 'message')
+        readonly_fields = ('created_at',)
